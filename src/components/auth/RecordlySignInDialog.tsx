@@ -80,7 +80,9 @@ export function RecordlySignInDialog({
 	const awaitingSignIn = useRef(false);
 	const wide = onboarding || variant === "wide";
 	const [showPermissions, setShowPermissions] = useState(false);
-	const requiresSignIn = onboarding && !user;
+	// Sign-in is only mandatory when cloud accounts exist in this build. A build without cloud
+	// configuration (e.g. a self-built fork) must stay usable, so the dialog can be closed.
+	const requiresSignIn = onboarding && !user && configured;
 	const permissions = onboarding && Boolean(user) && showPermissions;
 	const [email, setEmail] = useState("");
 	const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
