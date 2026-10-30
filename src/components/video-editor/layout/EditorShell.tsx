@@ -19,6 +19,7 @@ import type { useExportSettings } from "../export/useExportSettings";
 import type { useTimelineEditingController } from "../hooks/useTimelineEditingController";
 import type { useVideoEditorPresets } from "../presets/useVideoEditorPresets";
 import type { useEditorProjectController } from "../project/useEditorProjectController";
+import { useProjectBundleExport } from "../project/useProjectBundleExport";
 import { SettingsPanel } from "../SettingsPanel";
 import type { useAppearanceState } from "../state/useAppearanceState";
 import type { useEditorUiState } from "../state/useEditorUiState";
@@ -138,6 +139,10 @@ export function EditorShell(props: Props) {
 		handleAutoSuggestZoomsConsumed,
 	} = editing;
 	const { dialogActions, status: exportStatus, exportMessage } = exportController;
+	const { handleExportProjectBundle, isExportingBundle } = useProjectBundleExport(
+		saveActions.saveProject,
+		t,
+	);
 	const dashboardSettingsContent = useMemo(
 		() => (
 			<SettingsPanel
@@ -271,6 +276,9 @@ export function EditorShell(props: Props) {
 				canUndo={history.canUndo}
 				canRedo={history.canRedo}
 				handleOpenProjectBrowser={openActions.handleOpenProjectBrowser}
+				handleExportProjectBundle={handleExportProjectBundle}
+				handleImportProjectBundle={openActions.handleImportProjectBundle}
+				isExportingProjectBundle={isExportingBundle}
 				handleUndo={history.handleUndo}
 				handleRedo={history.handleRedo}
 				handleProjectNameSubmit={saveActions.handleProjectNameSubmit}

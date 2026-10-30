@@ -1,6 +1,8 @@
 import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 import { Separator } from "@heroui/react";
 import {
+	ArrowSquareOut,
+	DownloadSimple,
 	House,
 	FilmStrip,
 	ArrowClockwise as Redo2,
@@ -34,6 +36,9 @@ type Props = {
 	canUndo: boolean;
 	canRedo: boolean;
 	handleOpenProjectBrowser: () => void;
+	handleExportProjectBundle: () => void;
+	handleImportProjectBundle: () => void;
+	isExportingProjectBundle: boolean;
 	handleUndo: () => void;
 	handleRedo: () => void;
 	handleProjectNameSubmit: (event?: FormEvent<HTMLFormElement>) => void;
@@ -72,6 +77,9 @@ export function EditorHeader(props: Props) {
 		canUndo,
 		canRedo,
 		handleOpenProjectBrowser,
+		handleExportProjectBundle,
+		handleImportProjectBundle,
+		isExportingProjectBundle,
 		handleUndo,
 		handleRedo,
 		handleProjectNameSubmit,
@@ -189,6 +197,38 @@ export function EditorHeader(props: Props) {
 				>
 					<FilmStrip weight={props.clipsOpen ? "fill" : "regular"} className="size-4" />
 					Clips
+				</Button>
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					className="h-9 shrink-0 gap-2 px-3"
+					onClick={handleExportProjectBundle}
+					disabled={isExportingProjectBundle}
+					title={t(
+						"editor.project.exportBundleTitle",
+						"Export project with all media to a single file, to open on another computer",
+					)}
+					aria-label={t("editor.project.exportBundle", "Export project")}
+				>
+					<ArrowSquareOut weight="regular" className="size-4" />
+					<span>{t("editor.project.exportBundle", "Export project")}</span>
+				</Button>
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					className="h-9 shrink-0 gap-2 px-3"
+					onClick={handleImportProjectBundle}
+					disabled={isExportingProjectBundle}
+					title={t(
+						"editor.project.importBundleTitle",
+						"Import a project exported with all its media (.recordlypack or .zip)",
+					)}
+					aria-label={t("editor.project.importBundle", "Import project")}
+				>
+					<DownloadSimple weight="regular" className="size-4" />
+					<span>{t("editor.project.importBundle", "Import project")}</span>
 				</Button>
 			</div>
 

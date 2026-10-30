@@ -905,6 +905,27 @@ interface Window {
 			canceled?: boolean;
 			error?: string;
 		}>;
+		exportProjectBundle: (projectPath?: string) => Promise<{
+			success: boolean;
+			canceled?: boolean;
+			path?: string;
+			fileCount?: number;
+			totalBytes?: number;
+			missing?: string[];
+			message?: string;
+			error?: string;
+		}>;
+		importProjectBundle: () => Promise<{
+			success: boolean;
+			canceled?: boolean;
+			path?: string;
+			project?: unknown;
+			message?: string;
+			error?: string;
+		}>;
+		onProjectBundleProgress: (
+			callback: (progress: { doneBytes: number; totalBytes: number }) => void,
+		) => () => void;
 		openProjectsDirectory: () => Promise<{
 			success: boolean;
 			path?: string;

@@ -1,3 +1,8 @@
+import { PROJECT_BUNDLE_EXTENSION } from "../project/bundle/bundleCore";
+import {
+	hasProjectBundleExtension,
+	importBundleAndLoadProject,
+} from "../project/bundle/importAndLoad";
 import { persistRecentMetadata } from "../project/recentMetadata";
 import { renameLibraryProject } from "../project/renameLibraryProject";
 import { createUntitledProject } from "../project/createUntitledProject";
@@ -650,7 +655,11 @@ export function registerProjectHandlers() {
 				filters: [
 					{
 						name: "Recordly Project",
-						extensions: [PROJECT_FILE_EXTENSION, ...LEGACY_PROJECT_FILE_EXTENSIONS],
+						extensions: [
+							PROJECT_FILE_EXTENSION,
+							...LEGACY_PROJECT_FILE_EXTENSIONS,
+							PROJECT_BUNDLE_EXTENSION,
+						],
 					},
 					{ name: "JSON", extensions: ["json"] },
 					{ name: "All Files", extensions: ["*"] },
@@ -662,6 +671,9 @@ export function registerProjectHandlers() {
 				return { success: false, canceled: true, message: "Open project canceled" };
 			}
 
+			if (hasProjectBundleExtension(result.filePaths[0])) {
+				return await importBundleAndLoadProject(result.filePaths[0]);
+			}
 			return await loadProjectFromPath(result.filePaths[0]);
 		} catch (error) {
 			console.error("Failed to load project file:", error);
@@ -771,6 +783,9 @@ export function registerProjectHandlers() {
 
 	ipcMain.handle("open-project-file-at-path", async (_, filePath: string) => {
 		try {
+			if (hasProjectBundleExtension(filePath)) {
+				return await importBundleAndLoadProject(filePath);
+			}
 			return await loadProjectFromPath(filePath);
 		} catch (error) {
 			console.error("Failed to open project file at path:", error);

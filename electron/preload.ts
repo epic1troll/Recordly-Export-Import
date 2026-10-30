@@ -899,6 +899,22 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	openProjectsDirectory: () => {
 		return ipcRenderer.invoke("open-projects-directory");
 	},
+	exportProjectBundle: (projectPath?: string) => {
+		return ipcRenderer.invoke("export-project-bundle", projectPath);
+	},
+	importProjectBundle: () => {
+		return ipcRenderer.invoke("import-project-bundle");
+	},
+	onProjectBundleProgress: (
+		callback: (progress: { doneBytes: number; totalBytes: number }) => void,
+	) => {
+		const listener = (
+			_event: Electron.IpcRendererEvent,
+			payload: { doneBytes: number; totalBytes: number },
+		) => callback(payload);
+		ipcRenderer.on("project-bundle-progress", listener);
+		return () => ipcRenderer.removeListener("project-bundle-progress", listener);
+	},
 	installDownloadedUpdate: () => {
 		return ipcRenderer.invoke("install-downloaded-update");
 	},

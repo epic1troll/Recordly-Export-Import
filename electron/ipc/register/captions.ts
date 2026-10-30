@@ -8,12 +8,18 @@ import {
 	sendWhisperModelDownloadProgress,
 } from "../captions/whisper";
 import { LEGACY_PROJECT_FILE_EXTENSIONS, PROJECT_FILE_EXTENSION } from "../constants";
+import { PROJECT_BUNDLE_EXTENSION } from "../project/bundle/bundleCore";
+import {
+	hasProjectBundleExtension,
+	importBundleAndLoadProject,
+} from "../project/bundle/importAndLoad";
 import { hasProjectFileExtension, loadProjectFromPath } from "../project/manager";
 import { setCurrentProjectPath } from "../state";
 import { approveUserPath, getRecordingsDir } from "../utils";
 
 const VIDEO_FILE_EXTENSIONS = ["webm", "mp4", "mov", "avi", "mkv"];
 const PROJECT_FILE_EXTENSIONS = [PROJECT_FILE_EXTENSION, ...LEGACY_PROJECT_FILE_EXTENSIONS];
+const PROJECT_OR_BUNDLE_EXTENSIONS = [...PROJECT_FILE_EXTENSIONS, PROJECT_BUNDLE_EXTENSION];
 
 type OpenVideoFilePickerOptions = {
 	includeProjects?: boolean;
@@ -34,14 +40,14 @@ export function registerCaptionHandlers() {
 									name: "Media or Recordly Projects",
 									extensions: [
 										...VIDEO_FILE_EXTENSIONS,
-										...PROJECT_FILE_EXTENSIONS,
+										...PROJECT_OR_BUNDLE_EXTENSIONS,
 									],
 								},
 							]
 						: []),
 					{ name: "Video Files", extensions: VIDEO_FILE_EXTENSIONS },
 					...(includeProjects
-						? [{ name: "Recordly Projects", extensions: PROJECT_FILE_EXTENSIONS }]
+						? [{ name: "Recordly Projects", extensions: PROJECT_OR_BUNDLE_EXTENSIONS }]
 						: []),
 					{ name: "All Files", extensions: ["*"] },
 				],
@@ -53,6 +59,11 @@ export function registerCaptionHandlers() {
 			}
 
 			const selectedPath = result.filePaths[0];
+
+			if (includeProjects && hasProjectBundleExtension(selectedPath)) {
+				const bundleResult = await importBundleAndLoadProject(selectedPath);
+				return bundleResult.success ? { ...bundleResult, kind: "project" } : bundleResult;
+			}
 
 			if (includeProjects && hasProjectFileExtension(selectedPath)) {
 				const projectResult = await loadProjectFromPath(selectedPath);

@@ -7,6 +7,7 @@ import { registerCloudShareHandlers } from "./register/cloudShare";
 import { registerExportHandlers } from "./register/export";
 import { registerPermissionHandlers } from "./register/permissions";
 import { registerProjectHandlers } from "./register/project";
+import { registerProjectBundleHandlers } from "./register/projectBundle";
 import { registerRecordingHandlers } from "./register/recording";
 import { registerSettingsHandlers } from "./register/settings";
 import { registerSourceHandlers } from "./register/sources";
@@ -74,5 +75,6 @@ export function registerIpcHandlers(
 	registerCaptionHandlers();
 	registerCloudShareHandlers();
 	registerProjectHandlers();
+	registerProjectBundleHandlers();
 	registerSettingsHandlers();
 }

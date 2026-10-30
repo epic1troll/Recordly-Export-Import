@@ -169,6 +169,30 @@ export function useProjectOpenActions({
 		refreshProjectLibrary,
 	]);
 
+	/** "Import project": one .recordlypack/.zip with the project and all of its media. */
+	const handleImportProjectBundle = useCallback(async () => {
+		if (!(await confirmReplaceSourceWithUnsavedChanges("import a project"))) return;
+		try {
+			const result = await window.electronAPI.importProjectBundle();
+			if (result.canceled) return;
+			if (!result.success) {
+				toast.error(result.error || result.message || "Failed to import project");
+				return;
+			}
+			if (!(await applyLoadedProject(result.project, result.path ?? null))) {
+				project.setError("Could not load project: invalid project file format");
+				return;
+			}
+			project.setProjectBrowserOpen(false);
+			await refreshProjectLibrary();
+			toast.success("Project imported");
+		} catch (error) {
+			project.setError(
+				`Could not import project: ${error instanceof Error ? error.message : String(error)}`,
+			);
+		}
+	}, [applyLoadedProject, confirmReplaceSourceWithUnsavedChanges, project, refreshProjectLibrary]);
+
 	const handleOpenProjectBrowser = useCallback(async () => {
 		if (project.projectBrowserOpen) {
 			project.setProjectBrowserOpen(false);
@@ -253,6 +277,7 @@ export function useProjectOpenActions({
 		handleRenameLibraryProject,
 		handleOpenProjectFromLibrary,
 		handleImportMediaOrProject,
+		handleImportProjectBundle,
 		handleOpenProjectBrowser,
 		handleDeleteProjects,
 	};
